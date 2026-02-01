@@ -1,0 +1,31 @@
+Google Play Microphone and Camera Policy
+==========================================
+
+1. USER INITIATED: Apps must only access the microphone
+   or camera when the user has explicitly triggered the
+   feature. No background recording or capturing is allowed.
+
+2. VISIBLE INDICATOR: Whenever the microphone or camera
+   is active, a clear visual indicator must be shown to
+   the user. This can be a recording icon or status bar
+   notification.
+
+3. NO BACKGROUND ACCESS: Apps must not record audio or
+   capture camera footage when running in the background.
+   Any attempt to do so will result in immediate removal
+   from the Play Store.
+
+4. DISCLOSURE: Microphone and camera usage must be
+   clearly disclosed in the app's privacy policy and
+   in the Play Store listing.
+
+5. MINIMAL ACCESS: Apps should only request microphone
+   or camera permissions if the feature is essential to
+   the app's core functionality. Permission requests
+   must be contextual and timed to when the feature is
+   actually needed.
+
+6. DATA HANDLING: Any audio or video captured must be
+   handled securely. Developers must disclose how this
+   data is stored, transmitted, and whether it is shared
+   with third parties.

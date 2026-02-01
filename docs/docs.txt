@@ -1,0 +1,5 @@
+Android apps only
+
+Google Play rules only
+
+APK / Android project code

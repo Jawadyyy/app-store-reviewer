@@ -1,0 +1,33 @@
+Google Play SMS and Call Log Policy
+===================================
+
+Apps that request SMS or call log permissions must
+meet ALL of the following requirements:
+
+1. CORE FUNCTIONALITY: SMS/call features must be the
+   primary purpose of the app. Utility apps that only
+   occasionally use SMS (e.g., for OTP) should use
+   intent-based approaches instead.
+
+2. USER CONSENT: Every SMS send must be preceded by
+   a clear, visible confirmation dialog showing:
+   - The recipient number
+   - The message content
+   - An explicit Send button
+
+3. NO AUTO-SEND: Apps must never send SMS automatically
+   without user action. Background SMS sending is
+   prohibited and will result in immediate removal.
+
+4. DISCLOSURE: The app's store listing must clearly
+   state that SMS functionality is present and explain
+   why it is needed.
+
+5. CALL LOG ACCESS: Reading or writing call logs is
+   restricted to default phone apps only. Third-party
+   apps must not request READ_CALL_LOG or WRITE_CALL_LOG
+   permissions.
+
+6. RECEIVING SMS: Only the default SMS app may listen
+   for incoming SMS messages. Third-party apps must
+   not use RECEIVE_SMS permission.

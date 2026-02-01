@@ -1,0 +1,26 @@
+Google Play Location Permissions Policy
+========================================
+
+1. FOREGROUND LOCATION: Apps may access location in
+   the foreground if the user has granted ACCESS_FINE_LOCATION
+   or ACCESS_COARSE_LOCATION. A visible indicator must
+   be shown while location is being accessed.
+
+2. BACKGROUND LOCATION: Apps targeting API 29+ must
+   request foreground location FIRST. Background location
+   requires a separate, explicit grant by the user.
+
+3. PRECISION: Apps should only request ACCESS_FINE_LOCATION
+   if precise location is necessary for core functionality.
+   Otherwise, use ACCESS_COARSE_LOCATION.
+
+4. TRANSPARENCY: Location usage must be disclosed in
+   the app's privacy policy and store listing.
+
+5. NO SILENT TRACKING: Apps must not track user location
+   without clear visible indication. Background location
+   access must show a persistent notification.
+
+6. JUSTIFICATION: Developers must provide a clear rationale
+   to users before requesting any location permission.
+   The rationale must explain how location data is used.

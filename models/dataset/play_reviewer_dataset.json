@@ -1,0 +1,62 @@
+[
+  {
+    "input": "App: com.example.sms_app | Verdict: REJECTED | Issues: [SEND_SMS - HIGH severity] | Policy: Apps may not send SMS without explicit user confirmation on each send.",
+    "output": "Your app has been flagged for a policy violation. The permission android.permission.SEND_SMS is detected but no evidence of a user-confirmation flow was found. Per our SMS and Call Log Policy, every SMS must be preceded by a clear confirmation dialog. Please update your implementation to use intent-based SMS (ACTION_SENDTO) or add explicit confirmation dialogs. Resubmit after addressing this issue."
+  },
+  {
+    "input": "App: com.example.tracker | Verdict: WARNING | Issues: [ACCESS_BACKGROUND_LOCATION - MEDIUM severity] | Policy: Background location requires foreground location to be granted first.",
+    "output": "Your app requests ACCESS_BACKGROUND_LOCATION. Please ensure that your app first requests and receives foreground location permission before requesting background access. Additionally, provide a clear rationale to the user explaining why background location is necessary for your app's core functionality. This will help us review your app more efficiently."
+  },
+  {
+    "input": "App: com.example.clean_app | Verdict: APPROVED | Issues: [] | Policy: No violations detected.",
+    "output": "Your app has been reviewed and meets Google Play's current policies. All requested permissions appear proportionate to your app's stated functionality. No policy violations were detected. Your app is approved for distribution."
+  },
+  {
+    "input": "App: com.example.spy_app | Verdict: REJECTED | Issues: [SEND_SMS - HIGH, READ_SMS - HIGH, ACCESS_BACKGROUND_LOCATION - MEDIUM] | Policy: SMS restricted. Background location needs justification.",
+    "output": "Your app has been rejected due to multiple policy violations. First, SEND_SMS and READ_SMS permissions are detected. Reading SMS is restricted to default messaging apps only — third-party apps may not request this permission. Second, background location access lacks clear justification. We recommend removing SMS read capabilities entirely and restructuring your location usage to foreground-only. Please address all flagged issues before resubmitting."
+  },
+  {
+    "input": "App: com.example.recorder | Verdict: WARNING | Issues: [RECORD_AUDIO - MEDIUM, CAMERA - MEDIUM] | Policy: Audio and camera must only activate during user action.",
+    "output": "Your app requests both RECORD_AUDIO and CAMERA permissions. Per our Microphone and Camera Policy, these features must only activate through explicit, visible user action. Ensure that recording and camera access are triggered only when the user initiates the action, and that a visible indicator is shown during active recording or capture. Please review your implementation and resubmit with these clarifications."
+  },
+  {
+    "input": "App: com.example.contacts_app | Verdict: REJECTED | Issues: [READ_CONTACTS - HIGH, WRITE_CONTACTS - HIGH] | Policy: Contact access must be justified and disclosed in privacy policy.",
+    "output": "Your app requests both READ_CONTACTS and WRITE_CONTACTS permissions. Per our User Data Policy, contact access must be directly tied to your app's core functionality and clearly disclosed in your privacy policy. We found no sufficient justification for writing contacts in your app's store listing. Please update your privacy policy, provide clear justification in your app description, and ensure contact modifications only happen with explicit user action."
+  },
+  {
+    "input": "App: com.example.dialer | Verdict: REJECTED | Issues: [CALL_PHONE - HIGH] | Policy: Initiating calls must go through user confirmation via ACTION_DIAL.",
+    "output": "Your app has been flagged for requesting the CALL_PHONE permission. Per our SMS and Call Log Policy, apps must not auto-dial without a visible user trigger. We recommend replacing direct call initiation with the ACTION_DIAL intent, which presents the number to the user for manual confirmation before the call is placed. Please update your implementation and resubmit."
+  },
+  {
+    "input": "App: com.example.utility | Verdict: APPROVED | Issues: [] | Policy: Only INTERNET and ACCESS_NETWORK_STATE detected. No violations.",
+    "output": "Your app has been reviewed and no policy violations were found. The permissions requested — INTERNET and ACCESS_NETWORK_STATE — are standard and proportionate to typical utility app functionality. Your app is approved for distribution on Google Play."
+  },
+  {
+    "input": "App: com.example.location_app | Verdict: WARNING | Issues: [ACCESS_FINE_LOCATION - MEDIUM] | Policy: Fine location must be tied to a clear user-facing feature.",
+    "output": "Your app requests ACCESS_FINE_LOCATION. Please ensure this permission is tied to a clear, user-facing feature and that a visible indicator is shown whenever location is being accessed. If precise location is not essential to your app's core functionality, consider using ACCESS_COARSE_LOCATION instead. Please provide a rationale to the user before requesting this permission."
+  },
+  {
+    "input": "App: com.example.phone_app | Verdict: REJECTED | Issues: [READ_CALL_LOG - HIGH, READ_PHONE_STATE - MEDIUM] | Policy: Call log access restricted to default phone apps. Phone state needs justification.",
+    "output": "Your app has been rejected. READ_CALL_LOG permission is restricted to default phone apps only and cannot be requested by third-party apps. Additionally, READ_PHONE_STATE requires clear justification tied to core functionality. We recommend removing READ_CALL_LOG entirely and providing a clear explanation for why phone state access is needed. Resubmit after making these changes."
+  },
+  {
+    "input": "App: com.example.sms_otp | Verdict: REJECTED | Issues: [RECEIVE_SMS - HIGH] | Policy: Only default SMS apps may listen for incoming SMS.",
+    "output": "Your app requests RECEIVE_SMS permission, which is restricted to default SMS apps only. Third-party apps must not listen for incoming SMS messages. If your app uses SMS for OTP verification, we recommend switching to an SMS verification API or intent-based approach instead. Please remove this permission and update your verification flow before resubmitting."
+  },
+  {
+    "input": "App: com.example.background_tracker | Verdict: REJECTED | Issues: [ACCESS_BACKGROUND_LOCATION - MEDIUM, SEND_SMS - HIGH] | Suspicious Services: [BackgroundLocationService] | Policy: Background location needs justification. SMS restricted.",
+    "output": "Your app has been rejected due to multiple policy violations. A background service — BackgroundLocationService — is detected alongside SEND_SMS permission, which raises serious concerns. Background location access requires strong justification and foreground location must be granted first. SMS sending must not occur automatically without explicit user confirmation. The combination of background services with SMS permissions is a significant policy red flag. Please remove unnecessary background services and address all permission issues before resubmitting."
+  },
+  {
+    "input": "App: com.example.audio_app | Verdict: WARNING | Issues: [RECORD_AUDIO - MEDIUM] | Policy: Audio recording must only occur during active user engagement.",
+    "output": "Your app requests RECORD_AUDIO permission. Per our Microphone and Camera Policy, audio recording must only be triggered by explicit user action and a visible recording indicator must be displayed at all times during recording. Background audio recording is strictly prohibited. Please ensure your app meets these requirements and resubmit for review."
+  },
+  {
+    "input": "App: com.example.camera_app | Verdict: WARNING | Issues: [CAMERA - MEDIUM] | Policy: Camera must be tied to visible user-initiated action.",
+    "output": "Your app requests CAMERA permission. Please ensure that camera access is only activated when the user explicitly triggers a camera feature within your app. A clear disclosure of camera usage must also be included in your privacy policy and Play Store listing. If camera access is not central to your app's functionality, consider whether this permission is necessary."
+  },
+  {
+    "input": "App: com.example.storage_app | Verdict: REJECTED | Issues: [READ_EXTERNAL_STORAGE - HIGH, WRITE_EXTERNAL_STORAGE - HIGH] | Policy: External storage access requires clear justification and user consent.",
+    "output": "Your app requests both READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE permissions. Per our User Data Policy, external storage access requires clear justification tied to core app functionality. Apps must not access files outside their own directory without explicit user consent. Please provide a detailed justification in your store listing, update your privacy policy, and ensure storage access is only triggered by direct user action."
+  }
+]

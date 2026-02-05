@@ -310,34 +310,6 @@ Relevant Policy Context:
 [LLM generates comment here]
 ```
 
-## 🧪 Testing
-
-### Test with the included manifest
-```bash
-# The project includes AndroidManifest.xml with intentional violations:
-# - SEND_SMS (HIGH)
-# - ACCESS_FINE_LOCATION (MEDIUM)
-# - RECORD_AUDIO (MEDIUM)
-# - BackgroundSmsService (suspicious)
-
-# Expected: REJECTED verdict with 70% probability
-```
-
-### Create your own test manifests
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.testapp">
-    
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.SEND_SMS"/>
-    
-    <application android:label="TestApp">
-        <service android:name=".BackgroundService"/>
-    </application>
-</manifest>
-```
-
 ## 🎨 Frontend Preview
 
 ### Upload Page
@@ -355,31 +327,4 @@ Detailed analysis showing:
 ### History Page
 Sortable table of all past analyses with quick access to reports
 
-## 🤝 Contributing
 
-Contributions are welcome! Areas for improvement:
-
-1. **Expand training dataset** (100+ examples for better LLM quality)
-2. **Add APK parsing** (not just manifest files)
-3. **Support more policies** (Ads, Payments, Children's apps)
-4. **Improve remediation suggestions** (code snippets, documentation links)
-5. **Add batch analysis** (analyze multiple apps at once)
-
-## 📝 License
-
-MIT License - See [LICENSE](LICENSE) file for details
-
-## 🙏 Acknowledgments
-
-- **Unsloth** for efficient LLM fine-tuning
-- **Ollama** for local LLM deployment
-- **Sentence-Transformers** for embeddings
-- **Django** and **Next.js** for the web stack
-
-## 📧 Contact
-
-For questions or feedback, open an issue or reach out at [your-email@example.com]
-
----
-
-**Built with ❤️ for Android developers navigating Google Play policies**

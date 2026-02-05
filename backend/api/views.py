@@ -1,22 +1,30 @@
-import sys
 import os
+import sys
 import tempfile
+import requests
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
 from .models import AnalysisReport
 from .serializers import ReportSerializer
 
 # Add analyzer and rag to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'analyzer'))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'rag'))
+BASE_DIR = os.path.dirname(__file__)
+sys.path.insert(0, os.path.join(BASE_DIR, "..", "..", "analyzer"))
+sys.path.insert(0, os.path.join(BASE_DIR, "..", "..", "rag"))
 
 from manifest_parser import analyze_app
 from retriever import build_context
-import requests
 
-OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate")
-OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.2")
+
+OLLAMA_URL = os.environ.get(
+    "OLLAMA_URL", "http://localhost:11434/api/generate"
+)
+OLLAMA_MODEL = os.environ.get(
+    "OLLAMA_MODEL", "play-reviewer"
+)
 
 
 class AnalyzeView(APIView):
@@ -26,10 +34,10 @@ class AnalyzeView(APIView):
         if not manifest_file:
             return Response(
                 {"error": "No manifest file uploaded."},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Save uploaded file to temp location
+        # Save uploaded file to a temp location
         with tempfile.NamedTemporaryFile(
             suffix=".xml", delete=False, mode="wb"
         ) as tmp:
@@ -44,8 +52,10 @@ class AnalyzeView(APIView):
             # Step 2: Get RAG context
             rag_context = build_context(report["permissions"])
 
-            # Step 3: Generate reviewer comment via Ollama
-            reviewer_comment = self._generate_comment(report, rag_context)
+            # Step 3: Generate reviewer comment
+            reviewer_comment = self._generate_comment(
+                report, rag_context
+            )
 
             # Step 4: Save to database
             db_report = AnalysisReport.objects.create(
@@ -56,7 +66,9 @@ class AnalyzeView(APIView):
                 policy_issues=report["policy_issues"],
                 suspicious_services=report["suspicious_services"],
                 verdict=report["verdict"]["verdict"],
-                rejection_probability=report["verdict"]["rejection_probability"],
+                rejection_probability=report["verdict"][
+                    "rejection_probability"
+                ],
                 confidence=report["verdict"]["confidence"],
                 reasons=report["verdict"]["reasons"],
                 remediations=report["verdict"]["remediations"],
@@ -65,33 +77,65 @@ class AnalyzeView(APIView):
 
             # Step 5: Return response
             serializer = ReportSerializer(db_report)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED,
+            )
 
         except Exception as e:
             return Response(
                 {"error": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
         finally:
             os.unlink(tmp_path)
 
-    def _generate_comment(self, report: dict, rag_context: str) -> str:
+    def _generate_comment(
+        self, report: dict, rag_context: str
+    ) -> str:
         verdict = report["verdict"]
 
-        prompt = (
-            f"### App Review Context:\n"
-            f"App: {report['app_info']['package_name']} | "
-            f"Verdict: {verdict['verdict']} | "
-            f"Confidence: {verdict['confidence']} | "
-            f"Rejection Probability: {verdict['rejection_probability']}\n\n"
-            f"Policy Issues:\n"
-            + "\n".join(
-                f"- {i['permission']}: {i['severity']} — {i['rejection_reason']}"
-                for i in report["policy_issues"]
-            )
-            + f"\n\nRelevant Policy Context:\n{rag_context}"
-            + f"\n\n### Reviewer Comment:\n"
+        issues_text = "\n".join(
+            f"• {issue['permission']} "
+            f"({issue['severity']}): "
+            f"{issue['rejection_reason']}"
+            for issue in report["policy_issues"]
         )
+
+        if verdict["verdict"] == "REJECTED":
+            prompt = f"""
+Write a professional Google Play rejection comment for this app.
+
+App: {report['app_info']['package_name']}
+Violations found:
+{issues_text}
+
+Write 2–3 paragraphs explaining why the app is rejected and what
+the developer needs to fix. Be specific and actionable.
+Do not include tables, code, or disclaimers.
+""".strip()
+
+        elif verdict["verdict"] == "WARNING":
+            prompt = f"""
+Write a professional Google Play warning comment for this app.
+
+App: {report['app_info']['package_name']}
+Issues to address:
+{issues_text}
+
+Write 2 paragraphs explaining the concerns and suggesting improvements.
+Be helpful and specific.
+""".strip()
+
+        else:  # APPROVED
+            prompt = f"""
+Write a brief approval comment for this app.
+
+App: {report['app_info']['package_name']}
+No major violations detected.
+
+Write 1–2 sentences confirming approval.
+""".strip()
 
         try:
             response = requests.post(
@@ -101,13 +145,14 @@ class AnalyzeView(APIView):
                     "prompt": prompt,
                     "stream": False,
                     "options": {
-                        "temperature": 0.7,
-                        "top_p": 0.9,
-                    }
+                        "temperature": 0.3,
+                        "top_p": 0.85,
+                    },
                 },
-                timeout=30
+                timeout=120,
             )
             return response.json().get("response", "")
+
         except Exception as e:
             return f"[LLM unavailable: {str(e)}]"
 
@@ -120,13 +165,33 @@ class ReportListView(APIView):
 
 
 class ReportDetailView(APIView):
+    """
+    GET /api/reports/{id}/    → Retrieve a single report
+    DELETE /api/reports/{id}/ → Delete a report
+    """
+
     def get(self, request, report_id):
         try:
             report = AnalysisReport.objects.get(pk=report_id)
         except AnalysisReport.DoesNotExist:
             return Response(
                 {"error": "Report not found."},
-                status=status.HTTP_404_NOT_FOUND
+                status=status.HTTP_404_NOT_FOUND,
             )
+
         serializer = ReportSerializer(report)
         return Response(serializer.data)
+
+    def delete(self, request, report_id):
+        try:
+            report = AnalysisReport.objects.get(pk=report_id)
+            report.delete()
+            return Response(
+                {"message": "Report deleted successfully."},
+                status=status.HTTP_200_OK,
+            )
+        except AnalysisReport.DoesNotExist:
+            return Response(
+                {"error": "Report not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )

@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
+import type { ReactNode } from "react";
 import { useParams } from "next/navigation";
-import { ArrowLeft, AlertTriangle, CheckCircle, XCircle, Info, Download, Share2, Clock, ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
+import { ArrowLeft, AlertTriangle, CheckCircle, XCircle, Info, Download, Share2, Clock, ChevronDown, ChevronUp, Copy, Check, Shield, FileText, Settings } from "lucide-react";
 
 interface Remediation {
   permission: string;
@@ -39,69 +40,95 @@ interface Report {
 }
 
 function RiskBadge({ level }: { level: string }) {
-  const colors: Record<string, { bg: string; text: string; border: string }> = {
-    HIGH:    { bg: "rgba(139, 0, 0, 0.2)", text: "#ff6b6b", border: "rgba(255, 107, 107, 0.3)" },
-    MEDIUM:  { bg: "rgba(184, 134, 11, 0.2)", text: "#ffd700", border: "rgba(255, 215, 0, 0.3)" },
-    LOW:     { bg: "rgba(34, 139, 34, 0.2)", text: "#90ee90", border: "rgba(144, 238, 144, 0.3)" },
-    UNKNOWN: { bg: "rgba(253, 240, 213, 0.1)", text: "#fdf0d5", border: "rgba(253, 240, 213, 0.2)" },
+  const configs: Record<string, { bg: string; text: string; border: string; icon: React.ReactNode }> = {
+    HIGH:    { 
+      bg: "rgba(239, 68, 68, 0.15)", 
+      text: "#fca5a5", 
+      border: "rgba(239, 68, 68, 0.3)",
+      icon: <AlertTriangle size={12} />
+    },
+    MEDIUM:  { 
+      bg: "rgba(251, 191, 36, 0.15)", 
+      text: "#fcd34d", 
+      border: "rgba(251, 191, 36, 0.3)",
+      icon: <AlertTriangle size={12} />
+    },
+    LOW:     { 
+      bg: "rgba(16, 185, 129, 0.15)", 
+      text: "#6ee7b7", 
+      border: "rgba(16, 185, 129, 0.3)",
+      icon: <CheckCircle size={12} />
+    },
+    UNKNOWN: { 
+      bg: "rgba(71, 85, 105, 0.15)", 
+      text: "#cbd5e1", 
+      border: "rgba(71, 85, 105, 0.3)",
+      icon: <Info size={12} />
+    },
   };
-  const { bg, text, border } = colors[level] || colors.UNKNOWN;
+  const config = configs[level] || configs.UNKNOWN;
   return (
     <span style={{
-      background: bg,
-      color: text,
-      border: `1px solid ${border}`,
-      padding: "0.5rem 1rem",
+      background: config.bg,
+      color: config.text,
+      border: `1px solid ${config.border}`,
+      padding: "6px 12px",
       borderRadius: "20px",
       fontSize: "0.75rem",
-      fontWeight: 600,
+      fontWeight: 700,
       display: "inline-flex",
       alignItems: "center",
-      gap: "0.25rem",
-      whiteSpace: "nowrap"
+      gap: "6px",
+      whiteSpace: "nowrap",
+      textTransform: "uppercase",
+      letterSpacing: "0.05em",
     }}>
-      {level === "HIGH" && <AlertTriangle size={12} />}
+      {config.icon}
       {level}
     </span>
   );
 }
 
 function VerdictBadge({ verdict }: { verdict: string }) {
-  const colors: Record<string, { bg: string; text: string; icon: React.ReactNode }> = {
+  const configs: Record<string, { bg: string; text: string; icon: React.ReactNode; glow: string }> = {
     REJECTED: { 
-      bg: "linear-gradient(135deg, rgba(139, 0, 0, 0.2), rgba(178, 34, 34, 0.2))", 
-      text: "#ff6b6b",
-      icon: <XCircle size={20} />
+      bg: "linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2))", 
+      text: "#fca5a5",
+      icon: <XCircle size={24} />,
+      glow: "0 0 30px rgba(239, 68, 68, 0.3)"
     },
     WARNING:  { 
-      bg: "linear-gradient(135deg, rgba(184, 134, 11, 0.2), rgba(218, 165, 32, 0.2))", 
-      text: "#ffd700",
-      icon: <AlertTriangle size={20} />
+      bg: "linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2))", 
+      text: "#fcd34d",
+      icon: <AlertTriangle size={24} />,
+      glow: "0 0 30px rgba(251, 191, 36, 0.3)"
     },
     APPROVED: { 
-      bg: "linear-gradient(135deg, rgba(40, 54, 24, 0.3), rgba(60, 80, 30, 0.3))", 
-      text: "#90ee90",
-      icon: <CheckCircle size={20} />
+      bg: "linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2))", 
+      text: "#6ee7b7",
+      icon: <CheckCircle size={24} />,
+      glow: "0 0 30px rgba(16, 185, 129, 0.3)"
     },
   };
-  const { bg, text, icon } = colors[verdict] || colors.REJECTED;
+  const config = configs[verdict] || configs.REJECTED;
   return (
     <div style={{
-      background: bg,
-      color: text,
-      border: `1px solid rgba(253, 240, 213, 0.1)`,
-      padding: "1rem 1.5rem",
+      background: config.bg,
+      color: config.text,
+      border: `1px solid ${config.text}40`,
+      padding: "16px 28px",
       borderRadius: "16px",
-      fontSize: "1rem",
-      fontWeight: 700,
+      fontSize: "1.125rem",
+      fontWeight: 800,
       letterSpacing: "0.05em",
       display: "inline-flex",
       alignItems: "center",
-      gap: "0.75rem",
-      backdropFilter: "blur(10px)",
-      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)"
+      gap: "12px",
+      backdropFilter: "blur(20px)",
+      boxShadow: config.glow,
+      textTransform: "uppercase",
     }}>
-      {icon}
+      {config.icon}
       {verdict}
     </div>
   );
@@ -163,7 +190,6 @@ export default function ReportPage() {
     
     setExporting(true);
     
-    // Create HTML content for PDF
     const htmlContent = `
 <!DOCTYPE html>
 <html>
@@ -171,95 +197,192 @@ export default function ReportPage() {
   <meta charset="UTF-8">
   <title>Analysis Report - ${report.app_label}</title>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       line-height: 1.6;
-      color: #333;
-      max-width: 800px;
+      color: #1e293b;
+      max-width: 900px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     }
-    h1 { color: #003049; border-bottom: 3px solid #003049; padding-bottom: 10px; }
-    h2 { color: #283618; margin-top: 30px; border-left: 4px solid #283618; padding-left: 10px; }
-    h3 { color: #003049; }
-    .header { background: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
-    .info-row { display: flex; justify-content: space-between; margin: 10px 0; }
+    h1 { 
+      color: #0f172a; 
+      border-bottom: 4px solid #3b82f6; 
+      padding-bottom: 16px;
+      margin-bottom: 32px;
+      font-size: 2.5rem;
+      font-weight: 800;
+    }
+    h2 { 
+      color: #1e293b; 
+      margin: 40px 0 20px 0;
+      border-left: 5px solid #8b5cf6; 
+      padding-left: 16px;
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+    h3 { 
+      color: #334155; 
+      margin: 24px 0 12px 0;
+      font-size: 1.25rem;
+    }
+    .header { 
+      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      color: white;
+      padding: 32px;
+      border-radius: 16px;
+      margin-bottom: 40px;
+      box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+    }
+    .header h2 {
+      color: white;
+      border: none;
+      padding: 0;
+      margin: 0 0 16px 0;
+      font-size: 2rem;
+    }
+    .info-row { 
+      display: flex; 
+      justify-content: space-between;
+      margin: 12px 0;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .info-row:last-child {
+      border-bottom: none;
+    }
     .verdict { 
       display: inline-block;
-      padding: 10px 20px;
-      border-radius: 20px;
-      font-weight: bold;
-      margin: 10px 0;
+      padding: 12px 24px;
+      border-radius: 24px;
+      font-weight: 800;
+      margin: 16px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 1.125rem;
     }
-    .verdict.REJECTED { background: #ffebee; color: #c62828; }
-    .verdict.WARNING { background: #fff8e1; color: #f57f17; }
-    .verdict.APPROVED { background: #e8f5e9; color: #2e7d32; }
+    .verdict.REJECTED { background: #fee2e2; color: #dc2626; border: 2px solid #dc2626; }
+    .verdict.WARNING { background: #fef3c7; color: #d97706; border: 2px solid #d97706; }
+    .verdict.APPROVED { background: #d1fae5; color: #059669; border: 2px solid #059669; }
     .risk-score {
-      font-size: 48px;
-      font-weight: bold;
+      font-size: 72px;
+      font-weight: 900;
       text-align: center;
-      margin: 20px 0;
+      margin: 32px 0;
+      padding: 40px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
-    .risk-HIGH { color: #c62828; }
-    .risk-MEDIUM { color: #f57f17; }
-    .risk-LOW { color: #2e7d32; }
+    .risk-HIGH { color: #dc2626; }
+    .risk-MEDIUM { color: #d97706; }
+    .risk-LOW { color: #059669; }
     .issue {
-      background: #f5f5f5;
-      padding: 15px;
-      margin: 10px 0;
-      border-left: 4px solid #ff6b6b;
-      border-radius: 4px;
+      background: white;
+      padding: 24px;
+      margin: 16px 0;
+      border-left: 5px solid #ef4444;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    .issue h3 {
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
     .permission-list {
-      background: #fafafa;
-      padding: 15px;
-      border-radius: 8px;
-      margin: 10px 0;
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      margin: 16px 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
     .permission-item {
-      padding: 8px;
-      margin: 5px 0;
-      background: white;
-      border-radius: 4px;
+      padding: 12px 16px;
+      margin: 8px 0;
+      background: #f8fafc;
+      border-radius: 8px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      border: 1px solid #e2e8f0;
     }
     .badge {
       display: inline-block;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: bold;
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
-    .badge-HIGH { background: #ffebee; color: #c62828; }
-    .badge-MEDIUM { background: #fff8e1; color: #f57f17; }
-    .badge-LOW { background: #e8f5e9; color: #2e7d32; }
+    .badge-HIGH { background: #fee2e2; color: #dc2626; border: 1px solid #dc2626; }
+    .badge-MEDIUM { background: #fef3c7; color: #d97706; border: 1px solid #d97706; }
+    .badge-LOW { background: #d1fae5; color: #059669; border: 1px solid #059669; }
     .footer {
-      margin-top: 50px;
-      padding-top: 20px;
-      border-top: 2px solid #ddd;
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 3px solid #e2e8f0;
       text-align: center;
-      color: #666;
-      font-size: 12px;
+      color: #64748b;
+      font-size: 0.875rem;
     }
     .comment-box {
-      background: #f9f9f9;
-      padding: 20px;
-      border-radius: 8px;
-      border-left: 4px solid #003049;
-      margin: 20px 0;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      padding: 28px;
+      border-radius: 12px;
+      border: 2px solid #3b82f6;
+      margin: 24px 0;
       white-space: pre-wrap;
+      line-height: 1.8;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+    }
+    .confidence-badge {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin-top: 16px;
+      font-size: 0.95rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    .stat-label {
+      font-size: 0.875rem;
+      color: #64748b;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #0f172a;
     }
   </style>
 </head>
 <body>
-  <h1>Play Store Compliance Analysis Report</h1>
+  <h1>📱 App Compliance Analysis Report</h1>
   
   <div class="header">
-    <h2 style="margin-top: 0; border: none; padding: 0;">${report.app_label}</h2>
+    <h2>${report.app_label}</h2>
     <div class="info-row">
       <strong>Package Name:</strong>
-      <span>${report.package_name}</span>
+      <span style="font-family: monospace;">${report.package_name}</span>
     </div>
     <div class="info-row">
       <strong>Report ID:</strong>
@@ -269,51 +392,70 @@ export default function ReportPage() {
       <strong>Analysis Date:</strong>
       <span>${new Date(report.created_at).toLocaleString()}</span>
     </div>
-    <div>
-      <strong>Verdict:</strong>
-      <span class="verdict ${report.verdict}">${report.verdict}</span>
+    <div style="margin-top: 20px;">
+      <div class="verdict ${report.verdict}">${report.verdict}</div>
+    </div>
+    <div class="confidence-badge">
+      <strong>Analysis Confidence:</strong> ${report.confidence}
     </div>
   </div>
 
-  <h2>Rejection Risk Assessment</h2>
-  <div class="risk-score risk-${report.rejection_probability > 0.6 ? 'HIGH' : report.rejection_probability > 0.3 ? 'MEDIUM' : 'LOW'}">
-    ${Math.round(report.rejection_probability * 100)}%
+  <h2>📊 Risk Assessment Overview</h2>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Rejection Risk</div>
+      <div class="stat-value risk-${report.rejection_probability > 0.6 ? 'HIGH' : report.rejection_probability > 0.3 ? 'MEDIUM' : 'LOW'}">
+        ${Math.round(report.rejection_probability * 100)}%
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Policy Issues</div>
+      <div class="stat-value" style="color: #ef4444;">
+        ${report.policy_issues.length}
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Permissions</div>
+      <div class="stat-value" style="color: #3b82f6;">
+        ${report.risk_report.length}
+      </div>
+    </div>
   </div>
-  <p style="text-align: center; color: #666;">
-    Analysis Confidence: <strong>${report.confidence}</strong>
-  </p>
 
   ${report.policy_issues.length > 0 ? `
-  <h2>Policy Violations (${report.policy_issues.length})</h2>
+  <h2>⚠️ Policy Violations (${report.policy_issues.length})</h2>
   ${report.policy_issues.map(issue => `
     <div class="issue">
-      <h3>${issue.permission} <span class="badge badge-${issue.severity}">${issue.severity}</span></h3>
-      <p><strong>Policy:</strong> ${issue.policy}</p>
-      <p><strong>Issue:</strong> ${issue.rejection_reason}</p>
-      <p style="background: #e8f5e9; padding: 10px; border-radius: 4px; margin-top: 10px;">
-        <strong>✓ Recommended Fix:</strong> ${issue.remediation}
-      </p>
+      <h3>
+        ${issue.permission}
+        <span class="badge badge-${issue.severity}">${issue.severity}</span>
+      </h3>
+      <p style="margin: 12px 0;"><strong>📋 Policy:</strong> ${issue.policy}</p>
+      <p style="margin: 12px 0; color: #dc2626;"><strong>❌ Issue:</strong> ${issue.rejection_reason}</p>
+      <div style="background: #d1fae5; padding: 16px; border-radius: 8px; margin-top: 16px; border-left: 4px solid #059669;">
+        <p style="margin: 0; color: #065f46;"><strong>✅ Recommended Fix:</strong> ${issue.remediation}</p>
+      </div>
     </div>
   `).join('')}
   ` : ''}
 
-  <h2>Permissions Analysis (${report.risk_report.length})</h2>
+  <h2>🔐 Permissions Analysis (${report.risk_report.length})</h2>
   <div class="permission-list">
     ${report.risk_report.map(item => `
       <div class="permission-item">
-        <span>${item.permission}</span>
+        <span style="font-family: monospace; font-size: 0.9rem;">${item.permission}</span>
         <span class="badge badge-${item.risk}">${item.risk}</span>
       </div>
     `).join('')}
   </div>
 
   ${report.suspicious_services.length > 0 ? `
-  <h2>Suspicious Services (${report.suspicious_services.length})</h2>
+  <h2>🚨 Suspicious Services (${report.suspicious_services.length})</h2>
   <div class="permission-list">
     ${report.suspicious_services.map(svc => `
       <div class="permission-item">
-        <span>${svc.name}</span>
-        <span style="color: ${svc.enabled === 'true' ? '#c62828' : '#2e7d32'};">
+        <span style="font-family: monospace; font-size: 0.9rem;">${svc.name}</span>
+        <span style="color: ${svc.enabled === 'true' ? '#dc2626' : '#059669'}; font-weight: 700;">
           ${svc.enabled === 'true' ? '● Enabled' : '○ Disabled'}
         </span>
       </div>
@@ -321,20 +463,20 @@ export default function ReportPage() {
   </div>
   ` : ''}
 
-  <h2>AI Review Summary</h2>
+  <h2>🤖 AI Review Summary</h2>
   <div class="comment-box">
     ${report.reviewer_comment || 'No comment generated.'}
   </div>
 
   <div class="footer">
-    <p>Play Store Reviewer v1.0 - Professional Compliance Analysis</p>
-    <p>Report generated on ${new Date().toLocaleString()}</p>
+    <p style="font-weight: 700; font-size: 1rem; margin-bottom: 8px;">App Analyzer v1.0</p>
+    <p>Professional Compliance Analysis Tool</p>
+    <p style="margin-top: 16px;">Report generated on ${new Date().toLocaleString()}</p>
   </div>
 </body>
 </html>
     `;
 
-    // Create and download HTML file
     const blob = new Blob([htmlContent], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -362,38 +504,83 @@ export default function ReportPage() {
 
   const handleShareViaEmail = () => {
     if (!report) return;
-    const subject = `Play Store Analysis Report - ${report.app_label}`;
-    const body = `I wanted to share this Play Store compliance analysis report with you:\n\nApp: ${report.app_label}\nPackage: ${report.package_name}\nVerdict: ${report.verdict}\nRisk Score: ${Math.round(report.rejection_probability * 100)}%\n\nView full report: ${window.location.href}`;
+    const subject = `App Analysis Report - ${report.app_label}`;
+    const body = `I wanted to share this compliance analysis report with you:\n\nApp: ${report.app_label}\nPackage: ${report.package_name}\nVerdict: ${report.verdict}\nRisk Score: ${Math.round(report.rejection_probability * 100)}%\n\nView full report: ${window.location.href}`;
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
+  const styles = {
+    container: {
+      minHeight: "100vh",
+      background: "linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%)",
+      color: "#f1f5f9",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif",
+      position: "relative" as const,
+      overflow: "hidden",
+      padding: "24px",
+    },
+    backgroundElement1: {
+      position: "absolute" as const,
+      top: "-200px",
+      right: "-200px",
+      width: "500px",
+      height: "500px",
+      background: "radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%)",
+      borderRadius: "50%",
+      filter: "blur(60px)",
+      animation: "float 8s ease-in-out infinite",
+    },
+    backgroundElement2: {
+      position: "absolute" as const,
+      bottom: "-200px",
+      left: "-200px",
+      width: "500px",
+      height: "500px",
+      background: "radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%)",
+      borderRadius: "50%",
+      filter: "blur(60px)",
+      animation: "float 10s ease-in-out infinite reverse",
+    },
+    backgroundElement3: {
+      position: "absolute" as const,
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: "400px",
+      height: "400px",
+      background: "radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%)",
+      borderRadius: "50%",
+      filter: "blur(80px)",
+      animation: "pulse 6s ease-in-out infinite",
+    },
+    contentWrapper: {
+      position: "relative" as const,
+      zIndex: 10,
+      maxWidth: "1400px",
+      margin: "0 auto",
+    },
+  };
+
   if (loading) return (
-    <div className="loading-container">
-      <div className="spinner-large" />
-      <p className="loading-text">Loading detailed analysis...</p>
-      <style jsx>{`
-        .loading-container {
-          min-height: 100vh;
-          background: linear-gradient(135deg, #003049 0%, #0a1929 100%);
-          color: #fdf0d5;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-family: 'Inter', sans-serif;
-          flex-direction: column;
-          gap: 1rem;
-        }
-        .spinner-large {
-          width: 50px;
-          height: 50px;
-          border: 3px solid rgba(253, 240, 213, 0.1);
-          border-top-color: #fdf0d5;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-        }
-        .loading-text {
-          color: rgba(253, 240, 213, 0.7);
-        }
+    <div style={{
+      minHeight: "100vh",
+      background: styles.container.background,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "20px",
+    }}>
+      <div style={{
+        width: "50px",
+        height: "50px",
+        border: "3px solid rgba(59, 130, 246, 0.2)",
+        borderTop: "3px solid #3b82f6",
+        borderRadius: "50%",
+        animation: "spin 0.8s linear infinite",
+      }} />
+      <p style={{ color: "#94a3b8", fontSize: "1.125rem", fontWeight: 600 }}>Loading detailed analysis...</p>
+      <style jsx global>{`
         @keyframes spin {
           to { transform: rotate(360deg); }
         }
@@ -402,66 +589,160 @@ export default function ReportPage() {
   );
 
   if (error || !report) return (
-    <div className="error-container">
-      <AlertTriangle size={48} />
-      <p className="error-text">{error || "Something went wrong"}</p>
-      <a href="/" className="back-link">Back to Upload</a>
-      <style jsx>{`
-        .error-container {
-          min-height: 100vh;
-          background: linear-gradient(135deg, #003049 0%, #0a1929 100%);
-          color: #ff6b6b;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-family: 'Inter', sans-serif;
-          flex-direction: column;
-          gap: 1rem;
-          padding: 2rem;
-        }
-        .error-text {
-          font-size: 1.125rem;
-          font-weight: 600;
-        }
-        .back-link {
-          color: #fdf0d5;
-          text-decoration: none;
-          padding: 0.75rem 1.5rem;
-          background: rgba(253, 240, 213, 0.1);
-          border-radius: 12px;
-          border: 1px solid rgba(253, 240, 213, 0.2);
-          margin-top: 1rem;
-        }
-      `}</style>
+    <div style={{
+      minHeight: "100vh",
+      background: styles.container.background,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "24px",
+      padding: "40px",
+    }}>
+      <AlertTriangle size={64} color="#f87171" />
+      <h2 style={{ color: "#f8fafc", fontSize: "1.75rem", fontWeight: 700, margin: 0 }}>Error Loading Report</h2>
+      <p style={{ color: "#94a3b8", fontSize: "1.125rem", margin: 0 }}>{error || "Report not found"}</p>
+      <a href="/" style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "8px",
+        padding: "14px 28px",
+        background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
+        color: "#ffffff",
+        textDecoration: "none",
+        borderRadius: "12px",
+        fontWeight: 700,
+        fontSize: "1rem",
+        marginTop: "16px",
+      }}>
+        <ArrowLeft size={20} />
+        Back to Analyzer
+      </a>
     </div>
   );
 
   return (
-    <div className="report-container">
-      <div className="bg-pattern" />
+    <div style={styles.container}>
+      {/* Background Elements */}
+      <div style={styles.backgroundElement1} />
+      <div style={styles.backgroundElement2} />
+      <div style={styles.backgroundElement3} />
 
       {/* Share Modal */}
       {showShareModal && (
-        <div className="modal-overlay" onClick={() => setShowShareModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3 className="modal-title">Share Report</h3>
-            <p className="modal-subtitle">Share this analysis report with others</p>
+        <div 
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0, 0, 0, 0.85)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "20px",
+            backdropFilter: "blur(10px)",
+          }}
+          onClick={() => setShowShareModal(false)}
+        >
+          <div 
+            style={{
+              background: "linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%)",
+              border: "1px solid rgba(71, 85, 105, 0.5)",
+              borderRadius: "20px",
+              padding: "32px",
+              maxWidth: "500px",
+              width: "100%",
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+              backdropFilter: "blur(20px)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ 
+              color: "#f8fafc", 
+              fontSize: "1.75rem", 
+              fontWeight: 800, 
+              margin: "0 0 8px 0",
+              background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}>
+              Share Report
+            </h3>
+            <p style={{ 
+              color: "#94a3b8", 
+              fontSize: "0.9375rem", 
+              margin: "0 0 24px 0" 
+            }}>
+              Share this analysis report with others
+            </p>
             
-            <div className="share-options">
-              <div className="share-link-container">
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "24px" }}>
+              <div style={{ display: "flex", gap: "8px" }}>
                 <input 
                   type="text" 
                   value={window.location.href} 
                   readOnly 
-                  className="share-link-input"
+                  style={{
+                    flex: 1,
+                    padding: "12px 16px",
+                    background: "rgba(30, 41, 59, 0.6)",
+                    border: "1px solid rgba(71, 85, 105, 0.5)",
+                    borderRadius: "10px",
+                    color: "#f1f5f9",
+                    fontSize: "0.875rem",
+                    fontFamily: "Monaco, monospace",
+                  }}
                 />
-                <button onClick={handleCopyLink} className="copy-button">
-                  {copied ? <Check size={16} /> : <Copy size={16} />}
+                <button 
+                  onClick={handleCopyLink}
+                  style={{
+                    padding: "12px 20px",
+                    background: copied ? "rgba(16, 185, 129, 0.2)" : "rgba(59, 130, 246, 0.2)",
+                    border: copied ? "1px solid rgba(16, 185, 129, 0.4)" : "1px solid rgba(59, 130, 246, 0.4)",
+                    borderRadius: "10px",
+                    color: copied ? "#6ee7b7" : "#93c5fd",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    fontWeight: 600,
+                    whiteSpace: "nowrap",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  {copied ? <Check size={18} /> : <Copy size={18} />}
                   {copied ? "Copied!" : "Copy"}
                 </button>
               </div>
 
-              <button onClick={handleShareViaEmail} className="share-method-button">
+              <button 
+                onClick={handleShareViaEmail}
+                style={{
+                  width: "100%",
+                  padding: "14px 20px",
+                  background: "rgba(30, 41, 59, 0.6)",
+                  border: "1px solid rgba(71, 85, 105, 0.5)",
+                  borderRadius: "10px",
+                  color: "#f1f5f9",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  textAlign: "left",
+                  fontSize: "0.9375rem",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "rgba(51, 65, 85, 0.7)";
+                  e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "rgba(30, 41, 59, 0.6)";
+                  e.currentTarget.style.borderColor = "rgba(71, 85, 105, 0.5)";
+                }}
+              >
                 📧 Share via Email
               </button>
 
@@ -470,139 +751,437 @@ export default function ReportPage() {
                   onClick={() => {
                     navigator.share({
                       title: `Analysis Report - ${report.app_label}`,
-                      text: `Check out this Play Store compliance analysis for ${report.app_label}`,
+                      text: `Check out this compliance analysis for ${report.app_label}`,
                       url: window.location.href
                     });
                   }}
-                  className="share-method-button"
+                  style={{
+                    width: "100%",
+                    padding: "14px 20px",
+                    background: "rgba(30, 41, 59, 0.6)",
+                    border: "1px solid rgba(71, 85, 105, 0.5)",
+                    borderRadius: "10px",
+                    color: "#f1f5f9",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    textAlign: "left",
+                    fontSize: "0.9375rem",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "rgba(51, 65, 85, 0.7)";
+                    e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.5)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "rgba(30, 41, 59, 0.6)";
+                    e.currentTarget.style.borderColor = "rgba(71, 85, 105, 0.5)";
+                  }}
                 >
                   📱 Share via Device
                 </button>
               )}
             </div>
 
-            <button onClick={() => setShowShareModal(false)} className="close-modal-button">
+            <button 
+              onClick={() => setShowShareModal(false)}
+              style={{
+                width: "100%",
+                padding: "12px 20px",
+                background: "rgba(71, 85, 105, 0.2)",
+                border: "1px solid rgba(71, 85, 105, 0.4)",
+                borderRadius: "10px",
+                color: "#cbd5e1",
+                cursor: "pointer",
+                fontWeight: 600,
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(71, 85, 105, 0.3)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(71, 85, 105, 0.2)";
+              }}
+            >
               Close
             </button>
           </div>
         </div>
       )}
 
-      <div className="content-wrapper">
+      <div style={styles.contentWrapper}>
         {/* Header */}
-        <header className="header">
-          <div className="header-top">
-            <a href="/" className="back-button">
-              <ArrowLeft size={16} />
-              Back to Upload
+        <header style={{ marginBottom: "40px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", marginBottom: "24px" }}>
+            <a 
+              href="/"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "10px 20px",
+                background: "rgba(30, 41, 59, 0.6)",
+                border: "1px solid rgba(71, 85, 105, 0.5)",
+                borderRadius: "12px",
+                color: "#cbd5e1",
+                textDecoration: "none",
+                fontSize: "0.9375rem",
+                fontWeight: 600,
+                transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                backdropFilter: "blur(10px)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(51, 65, 85, 0.8)";
+                e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
+                e.currentTarget.style.transform = "translateX(-2px)";
+                e.currentTarget.style.color = "#93c5fd";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(30, 41, 59, 0.6)";
+                e.currentTarget.style.borderColor = "rgba(71, 85, 105, 0.5)";
+                e.currentTarget.style.transform = "translateX(0)";
+                e.currentTarget.style.color = "#cbd5e1";
+              }}
+            >
+              <ArrowLeft size={18} />
+              Back to Analyzer
             </a>
-            <div className="timestamp">
-              <Clock size={14} />
+
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "0.875rem" }}>
+              <Clock size={16} />
               {new Date(report.created_at).toLocaleString()}
             </div>
           </div>
 
-          <div className="header-main">
-            <div className="app-info">
-              <h1 className="app-name">{report.app_label}</h1>
-              <p className="package-name">{report.package_name}</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginBottom: "24px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "24px" }}>
+              <div style={{ flex: 1, minWidth: "300px" }}>
+                <div style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "8px 20px",
+                  background: "linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)",
+                  borderRadius: "100px",
+                  marginBottom: "16px",
+                  border: "1px solid rgba(59, 130, 246, 0.3)",
+                  fontSize: "0.875rem",
+                  fontWeight: 600,
+                  color: "#93c5fd",
+                  backdropFilter: "blur(10px)",
+                }}>
+                  <FileText size={16} />
+                  Analysis Report
+                </div>
+                <h1 style={{
+                  fontSize: "clamp(2rem, 5vw, 3rem)",
+                  fontWeight: 800,
+                  marginBottom: "12px",
+                  background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #06b6d4 100%)",
+                  backgroundSize: "200% auto",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  animation: "gradient 4s ease infinite",
+                  letterSpacing: "-0.02em",
+                  lineHeight: 1.1,
+                  wordBreak: "break-word",
+                }}>
+                  {report.app_label}
+                </h1>
+                <p style={{
+                  color: "#64748b",
+                  margin: 0,
+                  fontSize: "0.875rem",
+                  fontFamily: "Monaco, 'Courier New', monospace",
+                  background: "rgba(30, 41, 59, 0.5)",
+                  padding: "8px 16px",
+                  borderRadius: "8px",
+                  display: "inline-block",
+                  border: "1px solid rgba(71, 85, 105, 0.5)",
+                  wordBreak: "break-all",
+                }}>
+                  {report.package_name}
+                </p>
+              </div>
+
+              <VerdictBadge verdict={report.verdict} />
             </div>
-            <VerdictBadge verdict={report.verdict} />
           </div>
 
-          <div className="action-buttons">
-            <button onClick={handleExportJSON} className="action-btn" title="Export as JSON">
-              <Download size={16} />
-              <span className="btn-text">JSON</span>
-            </button>
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
             <button 
-              onClick={handleExportPDF} 
-              className="action-btn" 
-              disabled={exporting}
-              title="Download as HTML Report"
+              onClick={handleExportJSON}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "12px 20px",
+                background: "rgba(30, 41, 59, 0.6)",
+                border: "1px solid rgba(71, 85, 105, 0.5)",
+                borderRadius: "12px",
+                color: "#cbd5e1",
+                cursor: "pointer",
+                fontSize: "0.9375rem",
+                fontWeight: 600,
+                transition: "all 0.2s ease",
+                backdropFilter: "blur(10px)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(51, 65, 85, 0.8)";
+                e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(30, 41, 59, 0.6)";
+                e.currentTarget.style.borderColor = "rgba(71, 85, 105, 0.5)";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
             >
-              <Download size={16} />
-              <span className="btn-text">{exporting ? "Exporting..." : "HTML"}</span>
+              <Download size={18} />
+              Export JSON
             </button>
-            <button onClick={handleShare} className="action-btn" title="Share Report">
-              <Share2 size={16} />
-              <span className="btn-text">Share</span>
+
+            <button 
+              onClick={handleExportPDF}
+              disabled={exporting}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "12px 20px",
+                background: "rgba(30, 41, 59, 0.6)",
+                border: "1px solid rgba(71, 85, 105, 0.5)",
+                borderRadius: "12px",
+                color: "#cbd5e1",
+                cursor: exporting ? "not-allowed" : "pointer",
+                fontSize: "0.9375rem",
+                fontWeight: 600,
+                transition: "all 0.2s ease",
+                backdropFilter: "blur(10px)",
+                opacity: exporting ? 0.5 : 1,
+              }}
+              onMouseEnter={(e) => {
+                if (!exporting) {
+                  e.currentTarget.style.backgroundColor = "rgba(51, 65, 85, 0.8)";
+                  e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.5)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!exporting) {
+                  e.currentTarget.style.backgroundColor = "rgba(30, 41, 59, 0.6)";
+                  e.currentTarget.style.borderColor = "rgba(71, 85, 105, 0.5)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                }
+              }}
+            >
+              <Download size={18} />
+              {exporting ? "Exporting..." : "Download HTML"}
+            </button>
+
+            <button 
+              onClick={handleShare}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "12px 20px",
+                background: "rgba(30, 41, 59, 0.6)",
+                border: "1px solid rgba(71, 85, 105, 0.5)",
+                borderRadius: "12px",
+                color: "#cbd5e1",
+                cursor: "pointer",
+                fontSize: "0.9375rem",
+                fontWeight: 600,
+                transition: "all 0.2s ease",
+                backdropFilter: "blur(10px)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(51, 65, 85, 0.8)";
+                e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.5)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(30, 41, 59, 0.6)";
+                e.currentTarget.style.borderColor = "rgba(71, 85, 105, 0.5)";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              <Share2 size={18} />
+              Share
             </button>
           </div>
         </header>
 
-        {/* Main Content */}
-        <div className="main-grid">
+        {/* Main Grid */}
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: window.innerWidth >= 1024 ? "1fr 400px" : "1fr",
+          gap: "24px",
+          marginBottom: "40px",
+        }}>
           {/* Left Column */}
-          <div className="left-column">
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
             {/* Risk Score Card */}
-            <div className="card risk-card">
-              <div className="risk-header">
-                <div>
-                  <h3 className="card-title">Rejection Risk Score</h3>
-                  <p className="card-subtitle">Higher score indicates greater Play Store rejection probability</p>
+            <div style={{
+              background: "rgba(15, 23, 42, 0.6)",
+              border: "1px solid rgba(71, 85, 105, 0.4)",
+              borderRadius: "20px",
+              padding: "32px",
+              backdropFilter: "blur(30px)",
+              boxShadow: "0 10px 40px rgba(0, 0, 0, 0.3)",
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "24px", marginBottom: "24px" }}>
+                <div style={{ flex: 1 }}>
+                  <h3 style={{ 
+                    color: "#f8fafc", 
+                    fontSize: "1.25rem", 
+                    fontWeight: 700, 
+                    margin: "0 0 8px 0",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                  }}>
+                    <Shield size={24} color="#3b82f6" />
+                    Rejection Risk Score
+                  </h3>
+                  <p style={{ color: "#94a3b8", fontSize: "0.9375rem", margin: 0 }}>
+                    Probability of Play Store rejection
+                  </p>
                 </div>
-                <div className="risk-circle">
-                  <svg width="100" height="100" viewBox="0 0 100 100">
+
+                <div style={{ position: "relative", width: "120px", height: "120px" }}>
+                  <svg width="120" height="120" viewBox="0 0 120 120">
                     <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
+                      cx="60"
+                      cy="60"
+                      r="52"
                       fill="none"
-                      stroke="rgba(253, 240, 213, 0.1)"
-                      strokeWidth="8"
+                      stroke="rgba(71, 85, 105, 0.3)"
+                      strokeWidth="10"
                     />
                     <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
+                      cx="60"
+                      cy="60"
+                      r="52"
                       fill="none"
-                      stroke={report.rejection_probability > 0.6 ? "#ff6b6b" : report.rejection_probability > 0.3 ? "#ffd700" : "#90ee90"}
-                      strokeWidth="8"
+                      stroke={report.rejection_probability > 0.6 ? "#ef4444" : report.rejection_probability > 0.3 ? "#fbbf24" : "#10b981"}
+                      strokeWidth="10"
                       strokeLinecap="round"
-                      strokeDasharray={`${report.rejection_probability * 283} 283`}
-                      transform="rotate(-90 50 50)"
+                      strokeDasharray={`${report.rejection_probability * 327} 327`}
+                      transform="rotate(-90 60 60)"
+                      style={{ transition: "stroke-dasharray 1s ease" }}
                     />
                   </svg>
-                  <div className="risk-value">
+                  <div style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    fontSize: "2rem",
+                    fontWeight: 800,
+                    color: report.rejection_probability > 0.6 ? "#fca5a5" : report.rejection_probability > 0.3 ? "#fcd34d" : "#6ee7b7",
+                    textAlign: "center",
+                  }}>
                     {Math.round(report.rejection_probability * 100)}%
                   </div>
                 </div>
               </div>
 
-              <div className="confidence-badge">
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                padding: "16px 20px",
+                background: "rgba(59, 130, 246, 0.1)",
+                border: "1px solid rgba(59, 130, 246, 0.3)",
+                borderRadius: "12px",
+                color: "#93c5fd",
+                fontSize: "0.9375rem",
+              }}>
                 <Info size={20} />
-                <span>Analysis confidence: <strong>{report.confidence}</strong></span>
+                <span>
+                  Analysis confidence: <strong>{report.confidence}</strong>
+                </span>
               </div>
             </div>
 
             {/* Policy Issues */}
             {report.policy_issues.length > 0 && (
-              <div className="card">
-                <h3 className="card-title issues-title">
-                  <AlertTriangle size={20} />
+              <div style={{
+                background: "rgba(15, 23, 42, 0.6)",
+                border: "1px solid rgba(239, 68, 68, 0.4)",
+                borderRadius: "20px",
+                padding: "32px",
+                backdropFilter: "blur(30px)",
+              }}>
+                <h3 style={{ 
+                  color: "#fca5a5", 
+                  fontSize: "1.25rem", 
+                  fontWeight: 700, 
+                  margin: "0 0 24px 0",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                }}>
+                  <AlertTriangle size={24} />
                   Policy Violations ({report.policy_issues.length})
                 </h3>
-                <div className="issues-list">
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                   {report.policy_issues.map((issue, i) => (
-                    <div key={i} className="issue-item" style={{
-                      borderLeftColor: issue.severity === "HIGH" ? "#ff6b6b" :
-                        issue.severity === "MEDIUM" ? "#ffd700" : "#90ee90"
-                    }}>
-                      <div className="issue-header">
-                        <div className="issue-info">
-                          <h4 className="issue-permission">{issue.permission}</h4>
-                          <p className="issue-policy">Policy: {issue.policy}</p>
+                    <div 
+                      key={i}
+                      style={{
+                        background: "rgba(30, 41, 59, 0.4)",
+                        borderRadius: "16px",
+                        padding: "24px",
+                        borderLeft: `5px solid ${issue.severity === "HIGH" ? "#ef4444" : issue.severity === "MEDIUM" ? "#fbbf24" : "#10b981"}`,
+                      }}
+                    >
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px", marginBottom: "16px", flexWrap: "wrap" }}>
+                        <div style={{ flex: 1, minWidth: "200px" }}>
+                          <h4 style={{ 
+                            color: "#f8fafc", 
+                            fontSize: "1rem", 
+                            fontWeight: 700, 
+                            margin: "0 0 6px 0",
+                            wordBreak: "break-word",
+                          }}>
+                            {issue.permission}
+                          </h4>
+                          <p style={{ color: "#94a3b8", fontSize: "0.875rem", margin: 0 }}>
+                            Policy: {issue.policy}
+                          </p>
                         </div>
                         <RiskBadge level={issue.severity} />
                       </div>
-                      <p className="issue-reason">{issue.rejection_reason}</p>
-                      <div className="issue-fix">
-                        <p className="fix-label">
+
+                      <p style={{ color: "#cbd5e1", fontSize: "0.9375rem", lineHeight: 1.7, margin: "0 0 16px 0" }}>
+                        {issue.rejection_reason}
+                      </p>
+
+                      <div style={{
+                        background: "rgba(16, 185, 129, 0.1)",
+                        border: "1px solid rgba(16, 185, 129, 0.3)",
+                        borderRadius: "12px",
+                        padding: "16px",
+                      }}>
+                        <p style={{ 
+                          color: "#6ee7b7", 
+                          fontSize: "0.875rem", 
+                          fontWeight: 700, 
+                          margin: "0 0 8px 0",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}>
                           <CheckCircle size={16} />
                           Recommended Fix
                         </p>
-                        <p className="fix-text">{issue.remediation}</p>
+                        <p style={{ color: "#cbd5e1", fontSize: "0.875rem", margin: 0, lineHeight: 1.6 }}>
+                          {issue.remediation}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -610,41 +1189,127 @@ export default function ReportPage() {
               </div>
             )}
 
-            {/* Reviewer Comment */}
-            <div className="card">
-              <h3 className="card-title">
+            {/* AI Review */}
+            <div style={{
+              background: "rgba(15, 23, 42, 0.6)",
+              border: "1px solid rgba(71, 85, 105, 0.4)",
+              borderRadius: "20px",
+              padding: "32px",
+              backdropFilter: "blur(30px)",
+            }}>
+              <h3 style={{ 
+                color: "#f8fafc", 
+                fontSize: "1.25rem", 
+                fontWeight: 700, 
+                margin: "0 0 20px 0",
+              }}>
                 🤖 AI Review Summary
               </h3>
-              <div className="comment-box">
-                <p className="comment-text">{report.reviewer_comment || "No comment generated."}</p>
+              <div style={{
+                background: "rgba(59, 130, 246, 0.05)",
+                border: "1px solid rgba(59, 130, 246, 0.2)",
+                borderRadius: "12px",
+                padding: "20px",
+              }}>
+                <p style={{ 
+                  color: "#cbd5e1", 
+                  fontSize: "0.9375rem", 
+                  lineHeight: 1.8, 
+                  margin: 0,
+                  whiteSpace: "pre-wrap",
+                }}>
+                  {report.reviewer_comment || "No comment generated."}
+                </p>
               </div>
             </div>
           </div>
 
           {/* Right Column */}
-          <div className="right-column">
-            {/* Permissions Summary */}
-            <div className="card">
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            {/* Permissions */}
+            <div style={{
+              background: "rgba(15, 23, 42, 0.6)",
+              border: "1px solid rgba(71, 85, 105, 0.4)",
+              borderRadius: "20px",
+              padding: "24px",
+              backdropFilter: "blur(30px)",
+            }}>
               <div 
-                className="collapsible-header"
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  cursor: "pointer",
+                  marginBottom: "20px",
+                  userSelect: "none",
+                }}
                 onClick={() => toggleSection('permissions')}
               >
-                <h3 className="card-title">
-                  Permissions Analysis ({report.risk_report.length})
+                <h3 style={{ 
+                  color: "#f8fafc", 
+                  fontSize: "1.125rem", 
+                  fontWeight: 700, 
+                  margin: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                }}>
+                  <Settings size={20} color="#3b82f6" />
+                  Permissions ({report.risk_report.length})
                 </h3>
-                {expandedSections.permissions ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                {expandedSections.permissions ? <ChevronUp size={20} color="#94a3b8" /> : <ChevronDown size={20} color="#94a3b8" />}
               </div>
-              
-              <div className={`permissions-list ${expandedSections.permissions ? 'expanded' : ''}`}>
-                {report.risk_report.slice(0, expandedSections.permissions ? undefined : 5).map((item, i) => (
-                  <div key={i} className="permission-item">
-                    <span className="permission-name">{item.permission}</span>
+
+              <div style={{ 
+                display: "flex", 
+                flexDirection: "column", 
+                gap: "8px",
+                maxHeight: expandedSections.permissions ? "none" : "300px",
+                overflow: expandedSections.permissions ? "visible" : "hidden",
+              }}>
+                {(expandedSections.permissions ? report.risk_report : report.risk_report.slice(0, 6)).map((item, i) => (
+                  <div 
+                    key={i}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: "12px",
+                      background: "rgba(30, 41, 59, 0.4)",
+                      padding: "12px 16px",
+                      borderRadius: "10px",
+                      transition: "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "rgba(51, 65, 85, 0.5)";
+                      e.currentTarget.style.transform = "translateX(4px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "rgba(30, 41, 59, 0.4)";
+                      e.currentTarget.style.transform = "translateX(0)";
+                    }}
+                  >
+                    <span style={{ 
+                      color: "#cbd5e1", 
+                      fontSize: "0.8125rem", 
+                      fontFamily: "Monaco, monospace",
+                      wordBreak: "break-all",
+                      flex: 1,
+                    }}>
+                      {item.permission}
+                    </span>
                     <RiskBadge level={item.risk} />
                   </div>
                 ))}
-                {!expandedSections.permissions && report.risk_report.length > 5 && (
-                  <div className="show-more">
-                    +{report.risk_report.length - 5} more
+                {!expandedSections.permissions && report.risk_report.length > 6 && (
+                  <div style={{
+                    textAlign: "center",
+                    padding: "12px",
+                    color: "#64748b",
+                    fontSize: "0.875rem",
+                    fontStyle: "italic",
+                  }}>
+                    +{report.risk_report.length - 6} more permissions
                   </div>
                 )}
               </div>
@@ -652,33 +1317,93 @@ export default function ReportPage() {
 
             {/* Suspicious Services */}
             {report.suspicious_services.length > 0 && (
-              <div className="card suspicious-card">
+              <div style={{
+                background: "rgba(15, 23, 42, 0.6)",
+                border: "1px solid rgba(251, 191, 36, 0.4)",
+                borderRadius: "20px",
+                padding: "24px",
+                backdropFilter: "blur(30px)",
+              }}>
                 <div 
-                  className="collapsible-header"
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    marginBottom: "20px",
+                    userSelect: "none",
+                  }}
                   onClick={() => toggleSection('suspicious')}
                 >
-                  <h3 className="card-title alert-title">
+                  <h3 style={{ 
+                    color: "#fcd34d", 
+                    fontSize: "1.125rem", 
+                    fontWeight: 700, 
+                    margin: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                  }}>
                     <AlertTriangle size={20} />
                     Suspicious Services ({report.suspicious_services.length})
                   </h3>
-                  {expandedSections.suspicious ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                  {expandedSections.suspicious ? <ChevronUp size={20} color="#fcd34d" /> : <ChevronDown size={20} color="#fcd34d" />}
                 </div>
-                
-                <div className={`services-list ${expandedSections.suspicious ? 'expanded' : ''}`}>
-                  {report.suspicious_services.slice(0, expandedSections.suspicious ? undefined : 3).map((svc, i) => (
-                    <div key={i} className="service-item">
-                      <div>
-                        <p className="service-name">{svc.name}</p>
-                        <p className="service-status">Status: {svc.enabled}</p>
+
+                <div style={{ 
+                  display: "flex", 
+                  flexDirection: "column", 
+                  gap: "12px",
+                  maxHeight: expandedSections.suspicious ? "none" : "250px",
+                  overflow: expandedSections.suspicious ? "visible" : "hidden",
+                }}>
+                  {(expandedSections.suspicious ? report.suspicious_services : report.suspicious_services.slice(0, 4)).map((svc, i) => (
+                    <div 
+                      key={i}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: "12px",
+                        background: "rgba(251, 191, 36, 0.05)",
+                        border: "1px solid rgba(251, 191, 36, 0.2)",
+                        padding: "16px",
+                        borderRadius: "12px",
+                      }}
+                    >
+                      <div style={{ flex: 1 }}>
+                        <p style={{ 
+                          color: "#fcd34d", 
+                          fontSize: "0.875rem", 
+                          fontWeight: 700, 
+                          margin: "0 0 4px 0",
+                          fontFamily: "Monaco, monospace",
+                          wordBreak: "break-all",
+                        }}>
+                          {svc.name}
+                        </p>
+                        <p style={{ color: "#94a3b8", fontSize: "0.75rem", margin: 0 }}>
+                          Status: {svc.enabled}
+                        </p>
                       </div>
-                      <div className="service-indicator" style={{
-                        background: svc.enabled === "true" ? "#ff6b6b" : "#90ee90"
+                      <div style={{
+                        width: "12px",
+                        height: "12px",
+                        borderRadius: "50%",
+                        background: svc.enabled === "true" ? "#ef4444" : "#10b981",
+                        boxShadow: `0 0 10px ${svc.enabled === "true" ? "#ef4444" : "#10b981"}`,
                       }} />
                     </div>
                   ))}
-                  {!expandedSections.suspicious && report.suspicious_services.length > 3 && (
-                    <div className="show-more">
-                      +{report.suspicious_services.length - 3} more
+                  {!expandedSections.suspicious && report.suspicious_services.length > 4 && (
+                    <div style={{
+                      textAlign: "center",
+                      padding: "12px",
+                      color: "#94a3b8",
+                      fontSize: "0.875rem",
+                      fontStyle: "italic",
+                    }}>
+                      +{report.suspicious_services.length - 4} more services
                     </div>
                   )}
                 </div>
@@ -686,24 +1411,82 @@ export default function ReportPage() {
             )}
 
             {/* Quick Actions */}
-            <div className="card">
-              <h3 className="card-title">Quick Actions</h3>
-              <div className="quick-actions">
-                <button onClick={handleExportJSON} className="quick-btn primary">
-                  <Download size={16} />
-                  Export as JSON
-                </button>
-                <button onClick={handleExportPDF} disabled={exporting} className="quick-btn primary">
-                  <Download size={16} />
-                  {exporting ? "Generating..." : "Download HTML Report"}
-                </button>
-                <button onClick={handleShare} className="quick-btn secondary">
-                  <Share2 size={16} />
-                  Share Report
-                </button>
-                <a href="/" className="quick-btn tertiary">
-                  <ArrowLeft size={16} />
+            <div style={{
+              background: "rgba(15, 23, 42, 0.6)",
+              border: "1px solid rgba(71, 85, 105, 0.4)",
+              borderRadius: "20px",
+              padding: "24px",
+              backdropFilter: "blur(30px)",
+            }}>
+              <h3 style={{ 
+                color: "#f8fafc", 
+                fontSize: "1.125rem", 
+                fontWeight: 700, 
+                margin: "0 0 16px 0",
+              }}>
+                Quick Actions
+              </h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <a 
+                  href="/"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    padding: "12px 20px",
+                    background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
+                    border: "none",
+                    borderRadius: "12px",
+                    color: "#ffffff",
+                    cursor: "pointer",
+                    fontSize: "0.9375rem",
+                    fontWeight: 700,
+                    textDecoration: "none",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow = "0 10px 30px rgba(59, 130, 246, 0.4)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <ArrowLeft size={18} />
                   Analyze Another App
+                </a>
+
+                <a 
+                  href="/history"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    padding: "12px 20px",
+                    background: "rgba(30, 41, 59, 0.6)",
+                    border: "1px solid rgba(71, 85, 105, 0.5)",
+                    borderRadius: "12px",
+                    color: "#cbd5e1",
+                    cursor: "pointer",
+                    fontSize: "0.9375rem",
+                    fontWeight: 600,
+                    textDecoration: "none",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "rgba(51, 65, 85, 0.8)";
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "rgba(30, 41, 59, 0.6)";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  <Clock size={18} />
+                  View History
                 </a>
               </div>
             </div>
@@ -711,721 +1494,68 @@ export default function ReportPage() {
         </div>
 
         {/* Footer */}
-        <footer className="footer">
-          Report ID: {report.id} • Generated on {new Date(report.created_at).toLocaleDateString()} • Play Store Reviewer v1.0
+        <footer style={{
+          marginTop: "48px",
+          paddingTop: "32px",
+          borderTop: "1px solid rgba(71, 85, 105, 0.3)",
+          color: "#64748b",
+          fontSize: "0.875rem",
+          textAlign: "center",
+        }}>
+          <p style={{ margin: 0 }}>
+            Report ID: {report.id} • Generated on {new Date(report.created_at).toLocaleDateString()} • App Analyzer v1.0
+          </p>
         </footer>
       </div>
 
-      <style jsx>{`
-        .report-container {
-          min-height: 100vh;
-          background: linear-gradient(135deg, #003049 0%, #0a1929 100%);
-          color: #fdf0d5;
-          font-family: 'Inter', sans-serif;
-          padding: 1rem;
-          position: relative;
-        }
-
-        @media (min-width: 768px) {
-          .report-container {
-            padding: 2rem;
+      {/* Global Animations */}
+      <style jsx global>{`
+        @keyframes pulse {
+          0%, 100% { 
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% { 
+            opacity: 0.8;
+            transform: scale(0.98);
           }
         }
-
-        .bg-pattern {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-image: 
-            radial-gradient(circle at 20% 80%, rgba(40, 54, 24, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(0, 48, 73, 0.1) 0%, transparent 50%);
-          pointer-events: none;
-        }
-
-        .content-wrapper {
-          max-width: 1200px;
-          margin: 0 auto;
-          position: relative;
-        }
-
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.8);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-          padding: 1rem;
-        }
-
-        .modal-content {
-          background: linear-gradient(135deg, #003049, #0a1929);
-          border: 1px solid rgba(253, 240, 213, 0.2);
-          border-radius: 20px;
-          padding: 2rem;
-          max-width: 500px;
-          width: 100%;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-title {
-          color: #fdf0d5;
-          font-size: 1.5rem;
-          font-weight: 700;
-          margin: 0 0 0.5rem 0;
-        }
-
-        .modal-subtitle {
-          color: rgba(253, 240, 213, 0.7);
-          font-size: 0.875rem;
-          margin: 0 0 1.5rem 0;
-        }
-
-        .share-options {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-          margin-bottom: 1.5rem;
-        }
-
-        .share-link-container {
-          display: flex;
-          gap: 0.5rem;
-        }
-
-        .share-link-input {
-          flex: 1;
-          padding: 0.75rem 1rem;
-          background: rgba(253, 240, 213, 0.05);
-          border: 1px solid rgba(253, 240, 213, 0.1);
-          border-radius: 8px;
-          color: #fdf0d5;
-          font-size: 0.875rem;
-          font-family: 'Monaco', monospace;
-        }
-
-        .copy-button {
-          padding: 0.75rem 1rem;
-          background: rgba(40, 54, 24, 0.5);
-          border: 1px solid rgba(40, 54, 24, 0.7);
-          border-radius: 8px;
-          color: #fdf0d5;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-weight: 600;
-          white-space: nowrap;
-        }
-
-        .copy-button:hover {
-          background: rgba(40, 54, 24, 0.7);
-        }
-
-        .share-method-button {
-          width: 100%;
-          padding: 1rem;
-          background: rgba(0, 48, 73, 0.5);
-          border: 1px solid rgba(0, 48, 73, 0.7);
-          border-radius: 8px;
-          color: #fdf0d5;
-          cursor: pointer;
-          font-weight: 600;
-          text-align: left;
-        }
-
-        .share-method-button:hover {
-          background: rgba(0, 48, 73, 0.7);
-        }
-
-        .close-modal-button {
-          width: 100%;
-          padding: 0.75rem;
-          background: rgba(253, 240, 213, 0.1);
-          border: 1px solid rgba(253, 240, 213, 0.2);
-          border-radius: 8px;
-          color: #fdf0d5;
-          cursor: pointer;
-          font-weight: 600;
-        }
-
-        .close-modal-button:hover {
-          background: rgba(253, 240, 213, 0.15);
-        }
-
-        .header {
-          margin-bottom: 2rem;
-        }
-
-        @media (min-width: 768px) {
-          .header {
-            margin-bottom: 3rem;
-          }
-        }
-
-        .header-top {
-          display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          gap: 1rem;
-          margin-bottom: 1rem;
-        }
-
-        .back-button {
-          color: rgba(253, 240, 213, 0.8);
-          text-decoration: none;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-size: 0.875rem;
-          padding: 0.5rem 1rem;
-          border-radius: 8px;
-          background: rgba(253, 240, 213, 0.05);
-          border: 1px solid rgba(253, 240, 213, 0.1);
-        }
-
-        .back-button:hover {
-          background: rgba(253, 240, 213, 0.1);
-        }
-
-        .timestamp {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          color: rgba(253, 240, 213, 0.6);
-          font-size: 0.875rem;
-        }
-
-        .header-main {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-          margin-bottom: 1.5rem;
-        }
-
-        @media (min-width: 768px) {
-          .header-main {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: flex-start;
-          }
-        }
-
-        .app-info {
-          flex: 1;
-          min-width: 0;
-        }
-
-        .app-name {
-          font-size: 1.75rem;
-          font-weight: 800;
-          margin: 0 0 0.5rem 0;
-          background: linear-gradient(135deg, #fdf0d5, #e6d9c2);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          letter-spacing: -0.02em;
-          word-break: break-word;
-        }
-
-        @media (min-width: 768px) {
-          .app-name {
-            font-size: 2.5rem;
-          }
-        }
-
-        .package-name {
-          color: rgba(253, 240, 213, 0.7);
-          margin: 0;
-          font-size: 0.875rem;
-          font-family: 'Monaco', 'Courier New', monospace;
-          background: rgba(0, 48, 73, 0.3);
-          padding: 0.5rem 1rem;
-          border-radius: 8px;
-          display: inline-block;
-          word-break: break-all;
-        }
-
-        @media (min-width: 768px) {
-          .package-name {
-            font-size: 1rem;
-          }
-        }
-
-        .action-buttons {
-          display: flex;
-          gap: 0.5rem;
-          flex-wrap: wrap;
-        }
-
-        .action-btn {
-          padding: 0.75rem;
-          background: rgba(253, 240, 213, 0.05);
-          border: 1px solid rgba(253, 240, 213, 0.1);
-          border-radius: 8px;
-          color: #fdf0d5;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-size: 0.875rem;
-          font-weight: 600;
-        }
-
-        .action-btn:hover:not(:disabled) {
-          background: rgba(253, 240, 213, 0.1);
-        }
-
-        .action-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .btn-text {
-          display: none;
-        }
-
-        @media (min-width: 640px) {
-          .btn-text {
-            display: inline;
-          }
-        }
-
-        .main-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 2rem;
-          margin-bottom: 2rem;
-        }
-
-        @media (min-width: 1024px) {
-          .main-grid {
-            grid-template-columns: 1fr 350px;
-          }
-        }
-
-        .left-column,
-        .right-column {
-          display: flex;
-          flex-direction: column;
-          gap: 2rem;
-        }
-
-        .card {
-          background: linear-gradient(135deg, rgba(0, 48, 73, 0.3), rgba(40, 54, 24, 0.3));
-          border: 1px solid rgba(253, 240, 213, 0.1);
-          border-radius: 20px;
-          padding: 1.5rem;
-          backdrop-filter: blur(10px);
-        }
-
-        @media (min-width: 768px) {
-          .card {
-            padding: 2rem;
-          }
-        }
-
-        .card-title {
-          color: #fdf0d5;
-          font-size: 1rem;
-          margin: 0 0 1.5rem 0;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        @media (min-width: 768px) {
-          .card-title {
-            font-size: 1.125rem;
-          }
-        }
-
-        .card-subtitle {
-          color: rgba(253, 240, 213, 0.7);
-          font-size: 0.875rem;
-          margin: 0;
-        }
-
-        .risk-card {
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        }
-
-        .risk-header {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-          margin-bottom: 1.5rem;
-        }
-
-        @media (min-width: 640px) {
-          .risk-header {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-          }
-        }
-
-        .risk-circle {
-          width: 100px;
-          height: 100px;
-          position: relative;
-          flex-shrink: 0;
-          margin: 0 auto;
-        }
-
-        @media (min-width: 640px) {
-          .risk-circle {
-            margin: 0;
-          }
-        }
-
-        .risk-value {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: #fdf0d5;
-        }
-
-        .confidence-badge {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 1rem;
-          background: rgba(253, 240, 213, 0.05);
-          border-radius: 12px;
-          color: rgba(253, 240, 213, 0.7);
-          font-size: 0.875rem;
-        }
-
-        .issues-title,
-        .alert-title {
-          color: #ff6b6b;
-        }
-
-        .issues-list {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .issue-item {
-          background: rgba(0, 0, 0, 0.2);
-          border-radius: 12px;
-          padding: 1.25rem;
-          border-left: 4px solid;
-        }
-
-        @media (min-width: 768px) {
-          .issue-item {
-            padding: 1.5rem;
-          }
-        }
-
-        .issue-header {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-          margin-bottom: 1rem;
-        }
-
-        @media (min-width: 640px) {
-          .issue-header {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: flex-start;
-          }
-        }
-
-        .issue-info {
-          flex: 1;
-          min-width: 0;
-        }
-
-        .issue-permission {
-          color: #fdf0d5;
-          font-size: 0.95rem;
-          margin: 0 0 0.25rem 0;
-          font-weight: 600;
-          word-break: break-word;
-        }
-
-        @media (min-width: 768px) {
-          .issue-permission {
-            font-size: 1rem;
-          }
-        }
-
-        .issue-policy {
-          color: rgba(253, 240, 213, 0.6);
-          font-size: 0.875rem;
-          margin: 0;
-        }
-
-        .issue-reason {
-          color: rgba(253, 240, 213, 0.8);
-          font-size: 0.875rem;
-          margin: 0 0 1rem 0;
-          line-height: 1.6;
-        }
-
-        .issue-fix {
-          background: rgba(40, 54, 24, 0.3);
-          border: 1px solid rgba(40, 54, 24, 0.5);
-          border-radius: 8px;
-          padding: 1rem;
-        }
-
-        .fix-label {
-          color: #90ee90;
-          font-size: 0.875rem;
-          margin: 0 0 0.5rem 0;
-          font-weight: 600;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .fix-text {
-          color: rgba(253, 240, 213, 0.8);
-          font-size: 0.875rem;
-          margin: 0;
-        }
-
-        .comment-box {
-          background: rgba(0, 0, 0, 0.2);
-          border-radius: 12px;
-          padding: 1.25rem;
-        }
-
-        @media (min-width: 768px) {
-          .comment-box {
-            padding: 1.5rem;
-          }
-        }
-
-        .comment-text {
-          color: rgba(253, 240, 213, 0.9);
-          font-size: 0.875rem;
-          line-height: 1.8;
-          margin: 0;
-          white-space: pre-wrap;
-        }
-
-        @media (min-width: 768px) {
-          .comment-text {
-            font-size: 0.95rem;
-          }
-        }
-
-        .collapsible-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          cursor: pointer;
-          margin-bottom: 1.5rem;
-          user-select: none;
-        }
-
-        .collapsible-header:hover {
-          opacity: 0.8;
-        }
-
-        .permissions-list,
-        .services-list {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-          max-height: 200px;
-          overflow: hidden;
-          transition: max-height 0.3s ease;
-        }
-
-        .permissions-list.expanded,
-        .services-list.expanded {
-          max-height: none;
-        }
-
-        .permission-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 0.75rem;
-          background: rgba(0, 0, 0, 0.2);
-          padding: 0.875rem;
-          border-radius: 8px;
-          transition: all 0.3s ease;
-        }
-
-        @media (min-width: 768px) {
-          .permission-item {
-            padding: 1rem;
-          }
-        }
-
-        .permission-item:hover {
-          background: rgba(253, 240, 213, 0.05);
-          transform: translateY(-2px);
-        }
-
-        .permission-name {
-          font-size: 0.8rem;
-          color: #fdf0d5;
-          font-family: 'Monaco', 'Courier New', monospace;
-          word-break: break-all;
-          flex: 1;
-        }
-
-        @media (min-width: 768px) {
-          .permission-name {
-            font-size: 0.875rem;
-          }
-        }
-
-        .suspicious-card {
-          background: linear-gradient(135deg, rgba(139, 0, 0, 0.2), rgba(178, 34, 34, 0.2));
-          border: 1px solid rgba(255, 107, 107, 0.3);
-        }
-
-        .service-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 1rem;
-          background: rgba(0, 0, 0, 0.3);
-          border-radius: 8px;
-          padding: 1rem;
-        }
-
-        .service-name {
-          color: #ffd700;
-          font-size: 0.8rem;
-          margin: 0 0 0.25rem 0;
-          font-weight: 600;
-          font-family: 'Monaco', 'Courier New', monospace;
-          word-break: break-all;
-        }
-
-        @media (min-width: 768px) {
-          .service-name {
-            font-size: 0.875rem;
-          }
-        }
-
-        .service-status {
-          color: rgba(253, 240, 213, 0.6);
-          font-size: 0.75rem;
-          margin: 0;
-        }
-
-        .service-indicator {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          flex-shrink: 0;
-        }
-
-        .show-more {
-          text-align: center;
-          padding: 0.75rem;
-          color: rgba(253, 240, 213, 0.6);
-          font-size: 0.875rem;
-          font-style: italic;
-        }
-
-        .quick-actions {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        .quick-btn {
-          width: 100%;
-          padding: 0.875rem 1rem;
-          border: 1px solid;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 0.875rem;
-          font-weight: 600;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          transition: all 0.3s ease;
-          text-decoration: none;
-        }
-
-        @media (min-width: 768px) {
-          .quick-btn {
-            padding: 1rem;
-          }
-        }
-
-        .quick-btn:hover:not(:disabled) {
-          transform: translateY(-2px);
-        }
-
-        .quick-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .quick-btn.primary {
-          background: rgba(40, 54, 24, 0.5);
-          border-color: rgba(40, 54, 24, 0.7);
-          color: #fdf0d5;
-        }
-
-        .quick-btn.primary:hover:not(:disabled) {
-          background: rgba(40, 54, 24, 0.7);
-        }
-
-        .quick-btn.secondary {
-          background: rgba(0, 48, 73, 0.5);
-          border-color: rgba(0, 48, 73, 0.7);
-          color: #fdf0d5;
-        }
-
-        .quick-btn.secondary:hover {
-          background: rgba(0, 48, 73, 0.7);
-        }
-
-        .quick-btn.tertiary {
-          background: rgba(253, 240, 213, 0.1);
-          border-color: rgba(253, 240, 213, 0.2);
-          color: #fdf0d5;
-        }
-
-        .quick-btn.tertiary:hover {
-          background: rgba(253, 240, 213, 0.15);
-        }
-
-        .footer {
-          margin-top: 2rem;
-          padding-top: 2rem;
-          border-top: 1px solid rgba(253, 240, 213, 0.1);
-          color: rgba(253, 240, 213, 0.5);
-          font-size: 0.7rem;
-          text-align: center;
-        }
-
-        @media (min-width: 768px) {
-          .footer {
-            margin-top: 3rem;
-            font-size: 0.75rem;
-          }
+        
+        @keyframes gradient {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
         }
 
         @keyframes spin {
           to { transform: rotate(360deg); }
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        ::-webkit-scrollbar {
+          width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: rgba(30, 41, 59, 0.3);
+          border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: rgba(71, 85, 105, 0.5);
+          border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: rgba(71, 85, 105, 0.7);
         }
       `}</style>
     </div>

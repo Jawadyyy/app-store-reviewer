@@ -30,20 +30,6 @@ export default function RootLayout({
           zIndex: 1000
         }} />
         {children}
-        <footer style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: "1rem",
-          textAlign: "center",
-          color: "rgba(253, 240, 213, 0.5)",
-          fontSize: "0.75rem",
-          background: "linear-gradient(to top, rgba(0, 48, 73, 0.9), transparent)",
-          backdropFilter: "blur(10px)"
-        }}>
-          Play Store Reviewer v1.0 • Professional Compliance Analysis
-        </footer>
       </body>
     </html>
   );

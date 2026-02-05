@@ -187,16 +187,22 @@ play-store-reviewer/
 ### Upload Page
 Clean, drag-and-drop interface for uploading AndroidManifest.xml files
 
+![Upload Page](images/ss1.png)
+
 ### Report Page
 Detailed analysis showing:
-- Verdict badge (REJECTED/WARNING/APPROVED)
+- Verdict badge (REJECTED / WARNING / APPROVED)
 - Rejection probability meter
 - Permissions list with risk badges
 - Policy violations with fixes
 - Suspicious services detection
 - AI-generated reviewer comment
 
+![Report Page](images/ss2.png)
+
 ### History Page
 Sortable table of all past analyses with quick access to reports
+
+![History Page](images/ss3.png)
 
 
